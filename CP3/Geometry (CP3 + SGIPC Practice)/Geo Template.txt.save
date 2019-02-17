@@ -1,0 +1,179 @@
+#define eps 1e-9
+const double PI = acos(-1);
+typedef int coord_t; // coordinate type
+
+class point
+{
+public:
+    coord_t x, y;
+
+    point() {x = y = 0.0;} //default constructor
+    point(coord_t x, coord_t y) : x(x), y(y) {} //constructor
+
+    bool operator <(const point &p) {
+        if(fabs(x - p.x) > eps)
+            return x < p.x;
+        return y < p.y;
+    }
+
+    bool operator ==(point &p) const{
+        return ((fabs(x - p.x) < eps) && (fabs(y - p.y) < eps));
+    }
+};
+
+point rotate(point p, double theta) { //rotating a point by theta angle(in degree)
+    double rad = theta*(PI/180);
+    return point(p.x*cos(rad) - p.y*sin(rad), p.x*sin(rad) + p.y*cos(rad));
+}
+
+coord_t ccw(point& a, point& b, point& c)
+{
+    return (b.y-a.y)*(c.x-b.x) - (b.x-a.x)*(c.y-b.y); // 0 = colinear, <0 = ccw, >0 = cw
+}
+
+bool onSegment(point& a, point& c, point& b)
+{
+    if(c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
+       c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y))
+      return true;
+
+    return false;
+}
+
+bool doIntersect(point& a, point& b, point& p, point& q) //segment ab & pq.
+{
+    coord_t o1 = ccw(a, b, p);
+    coord_t o2 = ccw(a, b, q);
+    coord_t o3 = ccw(p, q, a);
+    coord_t o4 = ccw(p, q, b);
+
+    if(o1 != o2 && o3 != o4) //general case
+	return true;
+
+    //Special Cases
+    if(o1 == 0 && onSegment(a, p, b)) return true; // a, b, p colinear & p on segment ab
+    if(o2 == 0 && onSegment(a, q, b)) return true;
+    if(o3 == 0 && onSegment(p, a, q)) return true;
+    if(o4 == 0 && onSegment(p, b, q)) return true;
+
+    return false;
+}
+
+vector <point> convexHull_MonotoneChain(vector<point>& P)
+{
+    int n = P.size(), k = 0;
+    vector <point> H(2*n);
+
+    sort(P.begin(), P.end());
+
+    for(int i = 0; i < n; i++) {
+        while(k >= 2 && ccw(H[k-2], H[k-1], P[i]) <= 0) k--;
+        H[k++] = P[i];
+    }
+
+    for(int i = n-2, t = k+1; i >= 0; i--) {
+        while(k >= t && ccw(H[k-2], H[k-1], P[i]) <= 0) k--;
+        H[k++] = P[i];
+    }
+
+    H.resize(k);
+    return H;
+}
+
+class line
+{
+public:
+    coord_t a, b, c;
+
+    line() : {a = b = c = 0.0;} //default constructor
+    line(coord_t a, coord_t b, coord_t c) : a(a), b(b), c(c) {} //constructor
+};
+
+void pointsToLine(point a, point b, line &l) //mine
+{
+    l.a = a.y-b.y;
+    l.b = b.x-a.x;
+    l.c = (a.x*b.y)-(b.x*a.y);
+}
+
+void pointsToLine(point a, point b, line &l) //cp3
+{
+    if(fabs(a.x-b.x) < eps) {
+        l.a = 1.0, l.b = 0.0, l.c = -p1.x;
+    }
+    else {
+        l.a = -(double)(a.y - b.y) / (a.x - b.x);
+        l.b = 1.0;
+        l.c = -(double)(l.a * a.x) - a.y;
+    }
+}
+
+bool areParallel(line l1, line l2) {
+    return (fabs(l1.a-l2.a) < eps) && (fabs(l1.b-l2.b) < eps);
+}
+
+bool areSame(line l1, line l2) {
+    return areParallel(l1, l2) && (fabs(l1.c-l2.c) < eps);
+}
+
+bool areIntersect(line l1, line l2, point &p) //cp3
+{
+    if(areParallel(l1, l2)) return false;
+
+    p.x = (l2.b * l1.c - l1.b * l2.c) / (l2.a * l1.b - l1.a * l2.b);
+
+    if(fabs(l1.b) > eps) p.y = -(l1.a*p.x + l1.c);
+    else p.y = -(l2.a * p.x + l2.c);
+
+    return true;
+}
+
+class vec //most of the vec is from CP3
+{
+public:
+    coord_t x, y;
+
+    vec() {x = y = 0.0;} //default constructor
+    vec(coord_t x, coord_t y) : x(x), y(y) {} //constructor
+};
+
+vec toVec(point a, point b) {
+    return vec(b.x - a.x, b.y - a.y);
+}
+
+vec scale(vec v, double s) {
+    return vec(v.x * s, v.y * s);
+}
+
+point translate(point p, vec v) {
+    return point(p.x + v.x, p.y + v.y);
+}
+
+coord_t dot(vec a, vec b) {
+    return (a.x*b.x + a.y*b.y);
+}
+
+coord_t norm_sq(vec v) {
+    return v.x*v.x + v.y*v.y;
+}
+
+coord_t dist(point a, point b) //euclidean distance
+{
+    coord_t dx = a.x-b.x, dy = a.y-b.y;
+    return sqrt(dx*dx + dy*dy);
+}
+
+coord_t distToLine(point a, point b, point p, point &c) //c = a + u * ab
+{
+    vec ap = toVec(a, p), ab = toVec(a, b);
+    double u = dot(ap, ab) / norm_sq(ab); //didn't understand this formula
+    c = translate(a, scale(ab, u));
+
+    return dist(p, c);
+}
+
+coord_t angle(point a, point o, point b) { //angle <aob
+    vec oa = toVec(o, a), ob = toVec(o, b);
+    return acos(dot(oa, ob) / sqrt(norm_sq(oa) * norm_sq(ob)));
+}
+

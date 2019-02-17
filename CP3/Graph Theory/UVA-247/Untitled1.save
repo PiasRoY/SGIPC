@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define MX 100
+#define pb push_back
+bool vis[MX];
+vector <int> s, adj[MX];
+int counter, low[MX], dfsno[MX], numScc;
+
+void tarjanSCC(int u)
+{
+	vis[u] = true;
+	dfsno[u] = low[u] = counter++;
+	s.pb(u);
+
+	for(int i = 0; i  < adj[u].size(); i++) {
+		int v = adj[u][i];
+
+		if(dfsno[v] == -1)
+			tarjanSCC(v);
+		if(vis[v])
+			low[u] = min(low[u], low[v]);
+	}
+
+	if(low[u] == dfsno[u]) {
+		printf("SCC %d :", ++numScc);
+		while(true) {
+			int v = s.back();
+			s.pop_back();
+			vis[v] = 0;
+			printf(" %d", v);
+			if(u == v) break;
+		}
+		printf("\n");
+	}
+}
+
+void reset()
+{
+	numScc = 0; s.clear();
+	for(int i = 0; i < MX; i++) {
+		adj[i].clear();
+		vis[i] = 0, dfsno[i] = -1;
+	}
+}
+
+int main()
+{
+	int n, e, x, y;
+	reset();
+
+	scanf("%d %d", &n, &e);
+
+	for(int i = 0; i < e; i++) {
+		scanf("%d %d", &x, &y);
+
+		adj[x].pb(y);
+	}
+
+	tarjanSCC(0);
+}
+/*
+8 9
+0 1
+1 3
+3 2
+2 1
+3 4
+4 5
+5 7
+7 6
+6 4
+
+5 6
+0 1
+1 2
+2 0
+1 3
+3 4
+4 1
+*/

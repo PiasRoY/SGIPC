@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+
+#define MX 1005
+#define inf 10000000
+#define mp make_pair
+#define ff first
+#define ss second
+#define pii pair <int, int>
+
+int d1[] = {-1, 0, 1, 0};
+int d2[] = {0, 1, 0, -1};
+
+int grid[MX][MX], r, c;
+long long dist[MX][MX];
+bool vis[MX][MX];
+
+void initial()
+{
+	for(int i = 0; i < MX; i++) {
+		for(int j = 0; j < MX; j++) {
+			dist[i][j] = inf;
+			vis[i][j] = false;
+		}
+	}
+}
+
+void djk(int srcx, int srcy)
+{
+	initial();
+
+	priority_queue <pair<int, pii>, vector <pair<int, pii> >, greater <pair<int, pii> > > pq;
+
+	pq.push(mp(grid[srcx][srcy], mp(srcx, srcy)));
+	dist[srcx][srcy] = grid[srcx][srcy];
+
+	while(!pq.empty()) {
+		auto u = pq.top();
+		pq.pop();
+
+		if(vis[u.ss.ff][u.ss.ss]) continue;
+
+		vis[u.ss.ff][u.ss.ss] = true;
+		for(int i = 0; i < 4; i++) {
+			int tx = u.ss.ff + d1[i], ty = u.ss.ss + d2[i];
+
+			if(tx < 0 || tx >= r || ty < 0 || ty >= c) continue;
+
+			if(dist[tx][ty] > dist[u.ss.ff][u.ss.ss] + grid[tx][ty]) {
+				dist[tx][ty] = dist[u.ss.ff][u.ss.ss] + grid[tx][ty];
+				pq.push(mp(dist[tx][ty], mp(tx, ty)));
+			}
+		}
+	}
+}
+
+int main()
+{
+	int test;
+	scanf("%d", &test);
+
+	for(int t = 1; t <= test; t++) {
+		scanf("%d %d", &r, &c);
+
+		for(int i = 0; i < r; i++) {
+			for(int j = 0; j < c; j++) {
+				scanf("%d", &grid[i][j]);
+			}
+		}
+
+		djk(0, 0);
+
+		printf("%d\n", dist[r-1][c-1]);
+	}
+}

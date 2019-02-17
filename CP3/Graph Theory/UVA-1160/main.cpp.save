@@ -1,0 +1,27 @@
+#include <iostream>
+#include <set>
+using namespace std;
+
+int main()
+{
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+
+	int cnt = 0, u, v;
+	set <int> s;
+    while(scanf("%d", &u) != EOF) {
+        if(u == -1) {
+			if(cnt-1 < s.size())
+            printf("%d\n", cnt-s.size()+1);
+            cnt = 0;
+			s.clear();
+            continue;
+        }
+        scanf("%d", &v);
+
+        s.insert(u);
+        s.insert(v);
+
+        cnt++;
+    }
+}

@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1539413807 source:f:\stuffs\backup\codes\cp3\graph theory\uva-11906\main.cpp
+	<cstdlib>
+	<iostream>
+	<vector>
+	<string>
+	<cstring>
+	<set>
+	<algorithm>
+

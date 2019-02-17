@@ -1,0 +1,12 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const double pi = acos(-1);
+
+int main()
+{
+	int a, r1, r2, r3, r4;
+	scanf("%d %d %d %d %d", &a, &r1, &r2, &r3, &r4);
+	
+	double ans = (a*a) - (pi/4) * ((r1*r1)+(r2*r2)+(r3*r3)+(r4*r4))
+}

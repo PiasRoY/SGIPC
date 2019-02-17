@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1541013557 source:f:\stuffs\backup\codes\cp3\graph theory\uva-1198\main.cpp
+	<iostream>
+	<stdio.h>
+	<sstream>
+	<string>
+

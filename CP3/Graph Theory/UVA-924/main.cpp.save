@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+ll lcm(int x, int y)
+{
+	return (x*(y/__gcd(x, y)));
+}
+
+int main()
+{
+	ll n;
+	scanf("%lld", &n);
+
+	ll ans=1;
+	for(ll i = max(n-100,1LL); i <= n; i++) 
+	{
+		for(ll j = max(n-100,1LL); j <= n; j++)
+		{
+			for(ll k = max(n-100,1LL); k <= n; k++)
+			{
+				ll lc = lcm(i, lcm(j,k));
+				ans=max(ans, lc);
+			}	
+		}
+	}
+
+	cout<<ans<<endl;
+}
