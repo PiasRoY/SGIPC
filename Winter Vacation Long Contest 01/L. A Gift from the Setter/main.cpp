@@ -15,8 +15,8 @@ typedef unsigned long long ull;
 #define pll pair<ll, ll>
 #define pdd pair <double, double>
 
-ull k, c, n, ans, sum, x, temp, co;
-ull a[MX], cum[MX];
+ll k, c, n, ans, sum, x;
+ll a[MX], cum[MX];
 
 int main()
 {
@@ -27,20 +27,23 @@ int main()
 		cin>>k>>c>>n>>a[0];
 
 		for(int i = 1; i < n; i++) {
-			temp = (a[i-1] * k) % mod;
+			a[i] = (((a[i-1] * k) % mod) + c) % mod;
+		}
 
-			a[i] = (temp + c) % mod;
+		sort(a, a+n);
+
+		for(int i = 1; i < n; i++) {
 			cum[i] = a[i] + cum[i-1];
 		}
 
 		sum = 0, x = n-1;
 		for(int i = 0; i < n; i++, x--) {
-			temp = x * a[i];
-			co = cum[n-1]-cum[i];
+			ll temp = x * a[i];
+			ll co = cum[n-1]-cum[i];
 
 			sum += abs(temp-co);
 		}
 
-		printf("Case %d: %llu\n", t, sum);
+		printf("Case %d: %lld\n", t, sum);
 	}
 }
